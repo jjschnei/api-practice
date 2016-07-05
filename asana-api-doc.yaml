@@ -1,0 +1,78 @@
+# Assumptions:
+
+# When making any changes to the API documentation, I would follow the contribution conventions outlined in the Asana API Metadata readme.
+
+# The new 'thanks' endpoint will be a property of the 'tasks' resource.  
+
+# Thanks will also be included in the 'story' resource. 
+
+# In keeping with Asana's value of transparency and mission to help teams work together, thanks posts will be viewable by all users who have access to the task to which the thanks is associated.  
+
+# The below documentation will fit within the 'properties' section of the existing task.yaml file.  To minimize repetition for this assignment, I have only included the tasks.yaml updates.  The below properties would also be added to story.yaml with the word 'task' replaced with 'story'.
+
+  - name: thanked
+    <<: *PropType.Bool
+    comment: |
+      True if the task is thanked by an authorized user, false if not.
+ 
+  - name: thanks
+    <<: *PropType.ThanksArray
+    access: Read-only
+    comment: |
+      Array of thanks messages for this task.  
+
+
+ - name: thanks_message
+    <<: *PropType.ThanksMessage
+    comment: |
+      A thank you message from a user containing an optional Asana value (must be either one of -- 'purpose','mindfulness', 'balance', 'clarity', 'empowerment', 'reality' or 'play') and a required short message. 
+
+
+# In addition to updating the .yaml docs, I would also document the 'thanks' endpoint in the api reference docs.  I would update the 'asana.com/developers/api-reference/task' page to include the below fields documentation.  Again, to minimize repetition, I have only included the updated material for the tasks resource.  I would also add the below material to the '/api-reference/story' doc with the word 'task' replaced with 'story'.
+
+Field           Description 
+
+thanked         Example: false
+
+                True if the task is thanked by an authorized user, false if not. 
+
+
+thanks          Example: [ { id: 1234, user: {id: 5678, name: 'Tim Bizarro'}, value: 'balance', message: 'Thank you for...' }, ... ]
+
+                Read-only. Array of thanks messages for this task. 
+
+
+thanks_message  Example:  { id: 1234, user: {id: 5678, name: 'Mittens'}, value: 'play', message: 'Thank you for...' }
+
+                A thank you message from a user containing an optional Asana value (must be either one of -- 'purpose','mindfulness', 'balance', 'clarity', 'empowerment', 'reality' or 'play') and a required short message. 
+
+              
+# Another assumptions is that an existing 'thanks' endpoint can be updated or one can be added by making a PUT request on the URL for that task.  The 'thanks_message' parameter can be used to specify the value and message of the thanks.  The request would return the complete updated task record.
+
+# Here is an example of a command-line GET request to return the array of 'thanks' for a specific task.  Note that this example uses the output expanding option:
+
+# Request
+curl -H "Authorization: Bearer <personal_access_token>" \
+https://app.asana.com/api/1.0/tasks/1234?opt_expand=thanks
+
+# Response
+HTTP/1.1 200
+{
+  "data": {
+    "id": 1234, 
+    "thanks": [
+    {
+      "id": 1235,
+      "user": {
+         "name": "Mittens",
+         "id": 1001 
+      },
+      "value": "play", 
+      "message": "I appreciate your beginner's mindset on this task",  
+      "created_at": "2016-06-30T11:30:74.327Z"
+    }]
+  }
+}
+
+# Observations 
+# In doing research for this question, I noticed some repetition in the documentation that may cause confusion.  For example, the "CREATE A TASK" section ('asana.com/developers/api-reference/tasks#create') has two identical sets of paragraphs.  It might be more clear to show the two endpoint options and remove the duplicate explanation. 
